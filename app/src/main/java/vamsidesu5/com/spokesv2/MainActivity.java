@@ -32,10 +32,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button spokes = (Button) findViewById(R.id.spokes);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
         spokes.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, activityfeed.class));
+                createSignInIntent();
             }
         });
 
@@ -118,10 +122,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-    }
-
-    private void isSetup(String userId) {
-
     }
 
 }
