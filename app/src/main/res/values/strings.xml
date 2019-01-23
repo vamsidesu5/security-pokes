@@ -83,4 +83,8 @@
     <string name="title_activity_notifications">Notifications</string>
     <string name="timestamp">Timestamp</string>
 
+    <string name="facebook_app_id">348970479276004</string>
+    <string name="fb_login_protocol_scheme">fb348970479276004</string>
+
+
 </resources>
