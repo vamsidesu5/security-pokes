@@ -49,13 +49,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        createSignInIntent();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
 
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        /*loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("email");
         loginButton.setOnClickListener(new View.OnClickListener()  {
             @Override
@@ -68,13 +69,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("message");
 
-        myRef.setValue("Hello, World!");
-        spokes.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createSignInIntent();
-            }
-        });
+        myRef.setValue("Hello, World!");*/
 
 
     }
