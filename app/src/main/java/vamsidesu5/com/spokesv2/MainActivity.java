@@ -16,6 +16,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -38,6 +39,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -263,29 +265,43 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+                final String uId = user.getUid();
+
+
                 Log.d("yo", fb_token.getUserId());
-
-
                 GraphRequest request = GraphRequest.newMeRequest(
                         fb_token,
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
+                            public void onCompleted(
+                                    JSONObject object,
+                                    GraphResponse response) {
                                 // Application code
+                                Log.d("res", object.toString());
                                 try {
-                                    String email = object.getString("email");
+                                    JSONArray jsonArray = object.getJSONObject("friends").getJSONArray("data");
+                                    String j = " " + jsonArray.length();
+                                    Log.d("leggooo", jsonArray.toString());
+
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        String name = jsonArray.getJSONObject(i).getString("name");
+                                        String id = jsonArray.getJSONObject(i).getString("id");
+                                        DatabaseReference userRef2 = FirebaseDatabase.getInstance().getReference("users/" + uId + "/friends/" + id);
+                                        userRef2.setValue(name);
+
+                                    }
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                             }
                         });
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "name");
+                parameters.putString("fields", "friends");
                 request.setParameters(parameters);
-                Log.d("res", request.executeAsync().toString());
+                request.executeAsync();
 
 
-                final String uId = user.getUid();
 
                 StringBuilder newEmailId = new StringBuilder();
                 String currEmail = user.getEmail();
