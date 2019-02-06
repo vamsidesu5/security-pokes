@@ -1,7 +1,8 @@
 <resources>
-    <string name="facebook_application_id" translatable="false">1:722864828743:android:6fa6016bf44d7e58</string>
-    <string name="facebook_login_protocol_scheme" translatable="false">1:722864828743:android:6fa6016bf44d7e58</string>
-    <string name="app_name">Spokes</string>
+    <string name="facebook_application_id" translatable="false">348970479276004</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb348970479276004</string>
+
+    <string name="app_name">spokesV2</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Sign in</string>
 
@@ -82,9 +83,6 @@
     <!-- Strings related to notifications -->
     <string name="title_activity_notifications">Notifications</string>
     <string name="timestamp">Timestamp</string>
-
-    <string name="facebook_app_id">348970479276004</string>
-    <string name="fb_login_protocol_scheme">fb348970479276004</string>
 
 
 </resources>
