@@ -83,10 +83,18 @@ public class friends2 extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot c : dataSnapshot.getChildren()) {
+                            Map<String, String> map = (Map) dataSnapshot.getValue();
                             Map<String, String> map2 = (Map) c.getValue();
+                            int i = 0;
                             for(Map.Entry<String, String> uids: map2.entrySet()){
+                                if(uids.getKey().equals("token") && i == 1){
+                                    String token = uids.getValue();
+                                    System.out.println(token);
+                                    i = 0;
+                                }
                                 if(friend.equals(uids.getValue())){
                                     String userID = c.getKey();
+                                    i++;
                                 }
                             }
                         }
