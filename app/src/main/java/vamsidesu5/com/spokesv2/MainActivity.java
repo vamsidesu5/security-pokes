@@ -121,8 +121,11 @@ public class MainActivity extends AppCompatActivity {
                 final String uId = user.getUid();
 
                 DatabaseReference userRef2 = FirebaseDatabase.getInstance().getReference("users/" + uId);
-                DatabaseReference userRef3 = FirebaseDatabase.getInstance().getReference("users/" + uId + "/token");
-                userRef3.setValue(token);
+                if (!token.equals("-1")) {
+                    DatabaseReference userRef3 = FirebaseDatabase.getInstance().getReference("users/" + uId + "/token");
+                    userRef3.setValue(token);
+                }
+
 
 
                 Log.d("yo", fb_token.getUserId());
