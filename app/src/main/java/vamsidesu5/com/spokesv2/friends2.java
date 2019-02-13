@@ -37,6 +37,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class friends2 extends AppCompatActivity {
@@ -79,6 +80,9 @@ public class friends2 extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 final String friend = (String) friendsList.getItemAtPosition(position);
                 DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/");
+                final DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference("messages/pending");
+
+
                 currRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -86,14 +90,20 @@ public class friends2 extends AppCompatActivity {
                             Map<String, String> map = (Map) dataSnapshot.getValue();
                             Map<String, String> map2 = (Map) c.getValue();
                             int i = 0;
+                            String userID = "";
                             for(Map.Entry<String, String> uids: map2.entrySet()){
                                 if(uids.getKey().equals("token") && i == 1){
                                     String token = uids.getValue();
-                                    System.out.println(token);
+                                    Log.d("regTok", token);
+                                    Map<String, Object> messageData = new HashMap<>();
+                                    messageData.put("receiveToken", token);
+                                    messageData.put("receiveID", userID);
+                                    messageData.put("senderID", user.getUid());
+                                    messageRef.updateChildren(messageData);
                                     i = 0;
                                 }
                                 if(friend.equals(uids.getValue())){
-                                    String userID = c.getKey();
+                                    userID = c.getKey();
                                     i++;
                                 }
                             }
