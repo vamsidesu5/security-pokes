@@ -27,6 +27,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import android.content.Intent;
 import android.os.Bundle;
@@ -53,7 +55,7 @@ public class friends2 extends AppCompatActivity {
         AccessToken fb_token = AccessToken.getCurrentAccessToken();
         final String uId = user.getUid();
         final ArrayList<String> friendslist = new ArrayList<>();
-        DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/" + uId + "/friends");
+        final DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/" + uId + "/friends");
         currRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -79,7 +81,8 @@ public class friends2 extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 final String friend = (String) friendsList.getItemAtPosition(position);
-                DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/");
+                final DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/");
+                final DatabaseReference pokeRef = FirebaseDatabase.getInstance().getReference("pokes/");
                 final DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference("messages/pending");
 
 
@@ -108,6 +111,22 @@ public class friends2 extends AppCompatActivity {
                                 }
                             }
                         }
+                        pokeRef.child("totalPokes").runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                Integer score = mutableData.getValue(Integer.class);
+                                if (score == null) {
+                                    return Transaction.success(mutableData);
+                                }
+                                mutableData.setValue(score + 1);
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {}
+                        });
+                        //pokeRef.child("totalPokes").setValue(1);
+                        //pokeRef.child("totalPokes").setValue(Integer.parseInt(dataSnapshot.child("totalPokes").getValue(String.class))+1);
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
