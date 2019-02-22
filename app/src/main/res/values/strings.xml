@@ -31,7 +31,7 @@
     <string name="yahoo_news">Yahoo News</string>
     <string name="slack">Slack</string>
 
-    <!-- Strings related to setup -->
+    <!-- Strings related to SetupView -->
     <string name="setup">Setup</string>
     <string name="selectservices">Select Frequently Used Services</string>
     <string name="addservices">Select a Service</string>
@@ -47,7 +47,7 @@
     </string-array>
 
 
-    <!-- Strings related to addfriends -->
+    <!-- Strings related to FriendsView -->
     <string name="addfriends">Add Friends</string>
     <string name="search">Search by Username: </string>
     <string name="searchby">Search</string>
@@ -64,13 +64,13 @@
     <string name="pokeback">Poke Back</string>
     <string name="pileon">Pile On</string>
 
-    <!-- Strings related to friends2 -->
+    <!-- Strings related to FriendsView -->
     <string name="title_activity_friends">Friends</string>
     <string name="friend1"> Friend 1</string>
     <string name="friend2"> Friend 2</string>
     <string name="friend3"> Friend 3</string>
 
-    <!-- Strings related to activityfeed -->
+    <!-- Strings related to ActivityView -->
     <string name="title_activity_activityfeed">activityfeed</string>
     <string name="activityfeed">Activity Feed</string>
     <string name="feeditem1">Friend 1 ignored Friend 2</string>

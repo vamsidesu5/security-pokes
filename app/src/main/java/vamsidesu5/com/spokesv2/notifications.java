@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 
+import vamsidesu5.com.spokesv2.View.ActivityView;
+import vamsidesu5.com.spokesv2.View.FriendsView;
+
 public class notifications extends AppCompatActivity {
 
     @Override
@@ -18,7 +21,7 @@ public class notifications extends AppCompatActivity {
         addfriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(notifications.this, addfriends.class));
+                startActivity(new Intent(notifications.this, FriendsView.class));
             }
         });
 
@@ -26,7 +29,7 @@ public class notifications extends AppCompatActivity {
         activityfeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(notifications.this, activityfeed.class));
+                startActivity(new Intent(notifications.this, ActivityView.class));
             }
         });
 
@@ -42,7 +45,7 @@ public class notifications extends AppCompatActivity {
         gotopoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(notifications.this, friends2.class));
+                startActivity(new Intent(notifications.this, FriendsView.class));
             }
         });
     }

@@ -1,38 +1,29 @@
-package vamsidesu5.com.spokesv2;
+package vamsidesu5.com.spokesv2.Model;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Random;
 
+import vamsidesu5.com.spokesv2.R;
+
 public class FirebaseMessages extends FirebaseMessagingService {
-    public FirebaseMessages() {
-    }
+
     public void onNewToken(String token) {
        super.onNewToken(token);
-       Log.d("TOKENFIREBASE",token);
-
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // Instance ID token to your app server.
-        //sendRegistrationToServer(token);
+       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+       sharedPreferences.edit().putString("token", token).apply();
     }
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -40,12 +31,12 @@ public class FirebaseMessages extends FirebaseMessagingService {
 
         showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
 
-        // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d("leggo", "Message data payload: " + remoteMessage.getData());
         }
 
     }
+
     public void showNotification(String title, String body){
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String NOTIFICATION_CHANNEL_ID = "vamsidesu5.com.spokesv2.test";

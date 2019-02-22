@@ -1,4 +1,4 @@
-package vamsidesu5.com.spokesv2;
+package vamsidesu5.com.spokesv2.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 
-public class activityfeed extends AppCompatActivity {
+import vamsidesu5.com.spokesv2.R;
+
+public class ActivityView extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +20,7 @@ public class activityfeed extends AppCompatActivity {
         addfriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activityfeed.this, addfriends.class));
+                startActivity(new Intent(ActivityView.this, FriendsView.class));
             }
         });
 
@@ -26,7 +28,7 @@ public class activityfeed extends AppCompatActivity {
         activityfeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activityfeed.this, activityfeed.class));
+                startActivity(new Intent(ActivityView.this, ActivityView.class));
             }
         });
 
@@ -34,7 +36,7 @@ public class activityfeed extends AppCompatActivity {
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activityfeed.this, notifications.class));
+                startActivity(new Intent(ActivityView.this, vamsidesu5.com.spokesv2.notifications.class));
             }
         });
 
@@ -42,7 +44,7 @@ public class activityfeed extends AppCompatActivity {
         gotopoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activityfeed.this, friends2.class));
+                startActivity(new Intent(ActivityView.this, FriendsView.class));
             }
         });
 
