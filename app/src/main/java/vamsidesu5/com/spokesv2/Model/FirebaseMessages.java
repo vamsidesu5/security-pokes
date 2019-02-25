@@ -32,9 +32,10 @@ public class FirebaseMessages extends FirebaseMessagingService {
         showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
 
         if (remoteMessage.getData().size() > 0) {
-            Log.d("leggo", "Message data payload: " + remoteMessage.getData());
+            Database database = new Database("processedMessages/" + remoteMessage.getData().get("msgID"));
+            database.updateChild(database.constructPayload("receiveStatus", "success"));
+            Log.d("payload", "Message data payload: " + remoteMessage.getData());
         }
-
     }
 
     public void showNotification(String title, String body){

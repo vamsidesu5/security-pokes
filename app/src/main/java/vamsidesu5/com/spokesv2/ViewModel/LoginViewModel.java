@@ -11,7 +11,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,9 +18,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import vamsidesu5.com.spokesv2.Model.Database;
 import vamsidesu5.com.spokesv2.Model.User;
@@ -63,28 +60,14 @@ public class LoginViewModel extends ViewModel {
         List<Object> userInfoData = new ArrayList<>();
         userInfoData.add(currUser.getFirebaseUser().getEmail());
         userInfoData.add(currUser.getFirebaseUser().getDisplayName());
-        database.updateChild(constructPayload(userInfoNodes, userInfoData));
+        database.updateChild(database.constructPayload(userInfoNodes, userInfoData));
     }
 
     private void updateToken(String token) {
         if (!token.equals("-1")) {
             Database database = new Database("users/" + currUser.getFirebaseUserID());
-            database.updateChild(constructPayload("/token", token));
+            database.updateChild(database.constructPayload("/token", token));
         }
-    }
-
-    private Map<String, Object> constructPayload (String node, Object data) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put(node, data);
-        return payload;
-    }
-
-    private Map<String, Object> constructPayload(List<String> nodes, List<Object> data) {
-        Map<String, Object> payload = new HashMap<>();
-        for (int i = 0; i < nodes.size(); i++) {
-            payload.put(nodes.get(i), data.get(i));
-        }
-        return payload;
     }
 
     private void updateFriendList() {
@@ -99,7 +82,7 @@ public class LoginViewModel extends ViewModel {
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 String friendsName = jsonArray.getJSONObject(i).getString("name");
                                 String friendId = jsonArray.getJSONObject(i).getString("id");
-                                database.updateChild(constructPayload("/" + friendId, friendsName));
+                                database.updateChild(database.constructPayload("/" + friendId, friendsName));
                             }
 
                         } catch (JSONException e) {

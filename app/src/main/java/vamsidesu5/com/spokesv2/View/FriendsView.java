@@ -100,7 +100,7 @@ public class FriendsView extends AppCompatActivity {
 
                             @Override
                             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
-                                final DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference("messages/" + "m" + totalPokes);
+                                final DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference("pendingMessages/" + "m" + totalPokes);
                                 for (DataSnapshot c : dataSnapshot.getChildren()) {
                                     Map<String, String> map = (Map) dataSnapshot.getValue();
                                     Map<String, String> map2 = (Map) c.getValue();
