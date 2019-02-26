@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
@@ -114,6 +115,7 @@ public class FriendsView extends AppCompatActivity {
                                             messageData.put("receiveToken", token);
                                             messageData.put("receiveID", userID);
                                             messageData.put("senderID", user.getUid());
+                                            messageData.put("timestamp", ServerValue.TIMESTAMP);
                                             messageRef.updateChildren(messageData);
                                             i = 0;
                                         }
