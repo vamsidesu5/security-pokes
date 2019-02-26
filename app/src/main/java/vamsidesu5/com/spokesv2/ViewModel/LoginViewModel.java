@@ -5,12 +5,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +53,7 @@ public class LoginViewModel extends ViewModel {
         updateUserInfo();
         updateToken(regToken);
         updateFriendList();
+        updateNumLogin();
     }
 
     public boolean checkSetup() {
@@ -57,9 +65,13 @@ public class LoginViewModel extends ViewModel {
         List<String> userInfoNodes = new ArrayList<>();
         userInfoNodes.add("email");
         userInfoNodes.add("name");
+        userInfoNodes.add("numOfLogins");
+        userInfoNodes.add("numPokes");
         List<Object> userInfoData = new ArrayList<>();
         userInfoData.add(currUser.getFirebaseUser().getEmail());
         userInfoData.add(currUser.getFirebaseUser().getDisplayName());
+        userInfoData.add(0);
+        userInfoData.add(0);
         database.updateChild(database.constructPayload(userInfoNodes, userInfoData));
     }
 
@@ -68,6 +80,26 @@ public class LoginViewModel extends ViewModel {
             Database database = new Database("users/" + currUser.getFirebaseUserID());
             database.updateChild(database.constructPayload("/token", token));
         }
+    }
+
+    private void updateNumLogin(){
+        final DatabaseReference loginRef = FirebaseDatabase.getInstance().getReference("users/" + currUser.getFirebaseUserID());
+        loginRef.child("numOfLogins").runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer logins = mutableData.getValue(Integer.class);
+                if (logins == null) {
+                    return Transaction.success(mutableData);
+                }
+                mutableData.setValue(logins + 1);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
     private void updateFriendList() {

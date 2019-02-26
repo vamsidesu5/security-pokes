@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import vamsidesu5.com.spokesv2.Model.User;
 import vamsidesu5.com.spokesv2.R;
 import vamsidesu5.com.spokesv2.ViewModel.FriendsViewModel;
 
@@ -36,6 +37,7 @@ import vamsidesu5.com.spokesv2.ViewModel.FriendsViewModel;
 public class FriendsView extends AppCompatActivity {
     private ListView friendsList;
     private FriendsViewModel mViewModel;
+    private User currUser = User.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +79,7 @@ public class FriendsView extends AppCompatActivity {
                 final String friend = (String) friendsList.getItemAtPosition(position);
                 final DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/");
                 final DatabaseReference pokeRef = FirebaseDatabase.getInstance().getReference("pokes/");
-
+                final DatabaseReference pokeRefUser = FirebaseDatabase.getInstance().getReference("users/" + currUser.getFirebaseUserID());
 
                 currRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     String totalPokes;
@@ -127,10 +129,23 @@ public class FriendsView extends AppCompatActivity {
                                 }
                             }
                         });
+                        pokeRefUser.child("numPokes").runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                Integer numPokes = mutableData.getValue(Integer.class);
+                                if (numPokes == null) {
+                                    return Transaction.success(mutableData);
+                                }
+                                numPokes++;
+                                mutableData.setValue(numPokes);
+                                return Transaction.success(mutableData);
+                            }
 
-
-                        //pokeRef.child("totalPokes").setValue(1);
-                        //pokeRef.child("totalPokes").setValue(Integer.parseInt(dataSnapshot.child("totalPokes").getValue(String.class))+1);
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
+                                Log.d("Updated" , "Poke for User is Updated.");
+                            }
+                        });
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
