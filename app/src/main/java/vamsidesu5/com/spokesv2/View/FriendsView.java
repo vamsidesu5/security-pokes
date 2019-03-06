@@ -1,6 +1,5 @@
 package vamsidesu5.com.spokesv2.View;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -118,6 +117,9 @@ public class FriendsView extends AppCompatActivity {
                                             messageData.put("receiveID", userID);
                                             messageData.put("senderID", user.getUid());
                                             messageData.put("timestamp", ServerValue.TIMESTAMP);
+                                            messageData.put("senderName", user.getDisplayName());
+                                            messageData.put("receiveName", friend);
+                                            Log.d("yo", friend);
                                             messageRef.updateChildren(messageData);
                                             i = 0;
                                         }
@@ -180,7 +182,7 @@ public class FriendsView extends AppCompatActivity {
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(FriendsView.this, vamsidesu5.com.spokesv2.notifications.class));
+                startActivity(new Intent(FriendsView.this, NotificationsView.class));
             }
         });
 
