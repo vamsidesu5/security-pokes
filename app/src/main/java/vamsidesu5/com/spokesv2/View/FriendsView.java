@@ -23,6 +23,7 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,12 +149,30 @@ public class FriendsView extends AppCompatActivity {
                                 Log.d("Updated" , "Poke for User is Updated.");
                             }
                         });
+                        pokeRefUser.child("socialRep").runTransaction(new Transaction.Handler() {
+                            @Override
+                            public Transaction.Result doTransaction(MutableData mutableData) {
+                                Integer score = mutableData.getValue(Integer.class);
+                                if (score == null) {
+                                    return Transaction.success(mutableData);
+                                }
+                                score = score + 2;
+                                mutableData.setValue(score);
+                                return Transaction.success(mutableData);
+                            }
+
+                            @Override
+                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
+                                Log.d("Updated" , "Poke for User is Updated.");
+                            }
+                        });
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
-
+                //TextView score = (TextView)findViewById(R.id.socialRep);
+               // score.setText("Social Reputation: " + pokeRefUser.child("socialRep"));
             }
         });
 
@@ -178,13 +197,13 @@ public class FriendsView extends AppCompatActivity {
             }
         });
 
-        ImageButton notifications = (ImageButton) findViewById(R.id.notifications);
+        /*ImageButton notifications = (ImageButton) findViewById(R.id.notifications);
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(FriendsView.this, NotificationsView.class));
+                startActivity(new Intent(FriendsView.this, .class));
             }
-        });
+        });*/
 
         ImageButton gotopoke = (ImageButton) findViewById(R.id.gotopoke);
         gotopoke.setOnClickListener(new View.OnClickListener() {

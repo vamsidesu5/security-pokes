@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -29,6 +31,7 @@ import java.util.List;
 
 import vamsidesu5.com.spokesv2.Model.Database;
 import vamsidesu5.com.spokesv2.Model.User;
+import vamsidesu5.com.spokesv2.R;
 
 public class LoginViewModel extends ViewModel {
     private static final int RC_SIGN_IN = 123;
@@ -65,16 +68,11 @@ public class LoginViewModel extends ViewModel {
         List<String> userInfoNodes = new ArrayList<>();
         userInfoNodes.add("email");
         userInfoNodes.add("name");
-        userInfoNodes.add("numOfLogins");
-        userInfoNodes.add("numPokes");
         List<Object> userInfoData = new ArrayList<>();
         userInfoData.add(currUser.getFirebaseUser().getEmail());
         userInfoData.add(currUser.getFirebaseUser().getDisplayName());
-        userInfoData.add(0);
-        userInfoData.add(0);
         database.updateChild(database.constructPayload(userInfoNodes, userInfoData));
     }
-
     private void updateToken(String token) {
         if (!token.equals("-1")) {
             Database database = new Database("users/" + currUser.getFirebaseUserID());
@@ -91,13 +89,31 @@ public class LoginViewModel extends ViewModel {
                 if (logins == null) {
                     return Transaction.success(mutableData);
                 }
-                mutableData.setValue(logins + 1);
+                logins = logins + 1;
+                mutableData.setValue(logins);
                 return Transaction.success(mutableData);
             }
 
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
 
+            }
+        });
+        loginRef.child("socialRep").runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer score = mutableData.getValue(Integer.class);
+                if (score == null) {
+                    return Transaction.success(mutableData);
+                }
+                score = score + 1;
+                mutableData.setValue(score);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
+                Log.d("Updated" , "Social Rep Updated");
             }
         });
     }
