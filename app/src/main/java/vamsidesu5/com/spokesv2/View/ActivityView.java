@@ -36,7 +36,7 @@ public class ActivityView extends AppCompatActivity {
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ActivityView.this, vamsidesu5.com.spokesv2.notifications.class));
+                startActivity(new Intent(ActivityView.this, NotificationsView.class));
             }
         });
 

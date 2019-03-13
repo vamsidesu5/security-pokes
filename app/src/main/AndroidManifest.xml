@@ -41,7 +41,7 @@
             android:label="@string/title_activity_activityfeed"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".View.SetupView" />
-        <activity android:name=".notifications" />
+        <activity android:name=".View.NotificationsView" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

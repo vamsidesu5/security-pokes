@@ -3,6 +3,7 @@ package vamsidesu5.com.spokesv2.Model;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -17,8 +18,12 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Random;
 
 import vamsidesu5.com.spokesv2.R;
+import vamsidesu5.com.spokesv2.View.NotificationsView;
+import vamsidesu5.com.spokesv2.ViewModel.LoginViewModel;
+import vamsidesu5.com.spokesv2.ViewModel.NotificationsViewModel;
 
 public class FirebaseMessages extends FirebaseMessagingService {
+    private NotificationsViewModel mViewModel;
 
     public void onNewToken(String token) {
        super.onNewToken(token);
@@ -36,6 +41,7 @@ public class FirebaseMessages extends FirebaseMessagingService {
             database.updateChild(database.constructPayload("receiveStatus", "success"));
             Log.d("payload", "Message data payload: " + remoteMessage.getData());
         }
+
     }
 
     public void showNotification(String title, String body){

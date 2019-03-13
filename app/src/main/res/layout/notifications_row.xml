@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/row_padding_vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/row_padding_vertical">
+
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/sendUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:color="@color/notificationTitle"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/timestamp"
+        android:layout_below="@id/sendUser" />
+
+    <Button
+        android:id="@+id/respondButton"
+        android:layout_width="90sp"
+        android:layout_height="35sp"
+        android:text="Respond"
+        android:layout_alignParentRight="true"/>
+
+    <Button
+        android:id="@+id/ignoreButton"
+        android:layout_width="90sp"
+        android:layout_height="35sp"
+        android:text="Ignore"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/respondButton"/>
+</RelativeLayout>

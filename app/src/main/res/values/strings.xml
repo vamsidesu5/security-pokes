@@ -63,6 +63,7 @@
     <string name="poke">Poke</string>
     <string name="pokeback">Poke Back</string>
     <string name="pileon">Pile On</string>
+    <string name="notificationsTitle">Notifications</string>
 
     <!-- Strings related to FriendsView -->
     <string name="title_activity_friends">Friends</string>
@@ -80,7 +81,7 @@
     <string name="feeditem5">Friend 2 ignored You</string>
     <string name="title_activity_setup">setup</string>
 
-    <!-- Strings related to notifications -->
+    <!-- Strings related to NotificationsView -->
     <string name="title_activity_notifications">Notifications</string>
     <string name="timestamp">Timestamp</string>
 

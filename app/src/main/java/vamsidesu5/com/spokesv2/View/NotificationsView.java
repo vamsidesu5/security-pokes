@@ -1,0 +1,88 @@
+package vamsidesu5.com.spokesv2.View;
+
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ListView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import vamsidesu5.com.spokesv2.Model.Database;
+import vamsidesu5.com.spokesv2.Model.Notification;
+import vamsidesu5.com.spokesv2.Model.NotificationManager;
+import vamsidesu5.com.spokesv2.Model.RecyclerViewAdapter;
+import vamsidesu5.com.spokesv2.R;
+import vamsidesu5.com.spokesv2.ViewModel.NotificationsViewModel;
+
+public class NotificationsView extends AppCompatActivity {
+    private NotificationsViewModel mViewModel;
+    public RecyclerViewAdapter adapter;
+    LinkedList<Notification> animalNames = new LinkedList<Notification>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_notifications);
+
+        long ts = 1551298097782L;
+
+        Date d = new Date(ts);
+        Log.d("yo", d.toString());
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        adapter = new RecyclerViewAdapter(animalNames);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(adapter);
+
+        Database database = new Database("pendingMessages");
+        database.getRef().limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Log.d("animal", child.toString());
+                    animalNames.addFirst(new Notification(child.child("senderName").getValue().toString() + " poked " +
+                            child.child("receiveName").getValue().toString(),
+                            Long.parseLong(child.child("timestamp").getValue().toString())));
+                    Log.d("sizelist", "" + animalNames.size());
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        animalNames.add(0, new Notification("Jimmy poked you!", 1551298097782L));
+
+        mViewModel = ViewModelProviders.of(this).get(NotificationsViewModel.class);
+    }
+}

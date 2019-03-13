@@ -7,44 +7,34 @@ var db = admin.database();
 var pendingMessages = db.ref('/pendingMessages');
 var processedMessages = db.ref('/processedMessages');
 
-exports.sendMessage = functions.database.ref('/pendingMessages')
-.onWrite((change, context) => {
-    if (change.before.exists()) {
-        return null;
-    }
-    if (!change.after.exists()) {
-        return null;
-    }
-    pendingMessages.on("child_added", function(snapshot) {
+exports.sendMessage = functions.database.ref('/pendingMessages/{msgID}')
+.onCreate((snapshot, context) => {
+        console.log(snapshot);
         const senderID = snapshot.val().senderID;
         const receiveID = snapshot.val().receiveID;
-        const token = snapshot.val().receiveToken;
-        const msgID = snapshot.key;
+        const token = snapshot.val().receiveToken
+        const msgID = context.params.msgID;
+        console.log(msgID)
+        const senderName = snapshot.val().senderName;
         return processedMessages.ref.child(msgID).child('receiveStatus').set('pending').then((snapshot) => {
-            var userRef = db.ref('users/' + senderID);
-            userRef.on("value", function(snapshot) {
-            const name = snapshot.val().name;
             var notify = {
                 notification: {
-                    title: 'You got Poked by ' + name,
+                    title: 'You got Poked by ' + senderName,
                     body: 'Success!'
                 },
                 data: {
-                    senderName: name,
+                    senderName: senderName,
                     senderID: senderID,
                     msgID: msgID
                 },
-                token: "eYa1BSUeT6k:APA91bHF4PyfSJpswk3pxlFcOBSMT-ueN9NFHTWrBg0TUAbrlxq5k-waA_DDCvuiHr-G7Xo-h1FgxFkkHtwmKEObUpPjGk2bNvS1o2JjAlcEB_0O4HR_MeXzE2jtd1qThzWoOF1v8g1R"
+                token: token
             };
             admin.messaging().send(notify).then((response) => {
-                processedMessages.ref.child(msgID).child('sendStatus').set('success');
+                return processedMessages.ref.child(msgID).child('sendStatus').set('success');
             })
             .catch((error) => {
                 console.log('Error sending message:', error);
             });
-            }, function (errorObject) {
-                console.log("The read failed: " + errorObject.code);
-            });
         });
-    });
+
 });

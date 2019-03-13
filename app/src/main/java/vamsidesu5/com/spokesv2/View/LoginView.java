@@ -9,6 +9,7 @@ import com.facebook.CallbackManager;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -17,8 +18,6 @@ import vamsidesu5.com.spokesv2.ViewModel.LoginViewModel;
 
 public class LoginView extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
-    private FirebaseAuth mAuth;
-    private CallbackManager mCallbackManager;
     private LoginViewModel mViewModel;
 
     @Override
@@ -27,13 +26,19 @@ public class LoginView extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
         List<AuthUI.IdpConfig> providers = mViewModel.signInSetup();
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .build(),
-                RC_SIGN_IN);
-        super.onCreate(savedInstanceState);
+        boolean signedIn = mViewModel.checkSignedIn();
+        if (signedIn) {
+            super.onCreate(savedInstanceState);
+            startActivity(new Intent(LoginView.this, FriendsView.class));
+        } else {
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN);
+            super.onCreate(savedInstanceState);
+        }
 
     }
 

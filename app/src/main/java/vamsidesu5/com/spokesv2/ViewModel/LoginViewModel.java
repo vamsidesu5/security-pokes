@@ -45,6 +45,10 @@ public class LoginViewModel extends ViewModel {
         return providers;
     }
 
+    public boolean checkSignedIn() {
+        return currUser != null;
+    }
+
     public void loginSuccessLog(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String regToken = sharedPreferences.getString("token", "-1");
