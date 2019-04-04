@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
+import com.facebook.AccessToken;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +32,7 @@ import vamsidesu5.com.spokesv2.Model.Database;
 import vamsidesu5.com.spokesv2.Model.Notification;
 import vamsidesu5.com.spokesv2.Model.NotificationManager;
 import vamsidesu5.com.spokesv2.Model.RecyclerViewAdapter;
+import vamsidesu5.com.spokesv2.Model.User;
 import vamsidesu5.com.spokesv2.R;
 import vamsidesu5.com.spokesv2.ViewModel.NotificationsViewModel;
 
@@ -57,8 +59,8 @@ public class NotificationsView extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
+        Database database = new Database("users/" + User.getInstance().getFirebaseUserID() + "/notifications");
 
-        Database database = new Database("pendingMessages");
         database.getRef().limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -66,8 +68,15 @@ public class NotificationsView extends AppCompatActivity {
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Log.d("animal", child.toString());
-                    animalNames.addFirst(new Notification(child.child("senderName").getValue().toString() + " poked " +
-                            child.child("receiveName").getValue().toString(),
+                    String sendUser = child.child("senderName").getValue().toString();
+                    String receiveUser = child.child("receiveName").getValue().toString();
+                    if (sendUser.equals(User.getInstance().getFirebaseUser().getDisplayName())) {
+                        sendUser = "You";
+                    } else {
+                        receiveUser = "You";
+                    }
+                    animalNames.addFirst(new Notification(sendUser + " poked " +
+                            receiveUser,
                             Long.parseLong(child.child("timestamp").getValue().toString())));
                     Log.d("sizelist", "" + animalNames.size());
                 }
@@ -81,7 +90,7 @@ public class NotificationsView extends AppCompatActivity {
             }
         });
 
-        animalNames.add(0, new Notification("Jimmy poked you!", 1551298097782L));
+        animalNames.add(0, new Notification("Jimmy poked You", 1551298097782L));
 
         mViewModel = ViewModelProviders.of(this).get(NotificationsViewModel.class);
     }

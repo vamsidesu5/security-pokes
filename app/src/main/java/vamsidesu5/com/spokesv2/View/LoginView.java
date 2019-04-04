@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.CallbackManager;
+import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ui.idp.AuthMethodPickerActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,10 +33,12 @@ public class LoginView extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             startActivity(new Intent(LoginView.this, FriendsView.class));
         } else {
+
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setAvailableProviders(providers)
+                            .setTheme(R.style.LoginTheme)
                             .build(),
                     RC_SIGN_IN);
             super.onCreate(savedInstanceState);
@@ -48,7 +52,7 @@ public class LoginView extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 mViewModel.loginSuccessLog(getApplicationContext());
                 if (mViewModel.checkSetup())
-                    startActivity(new Intent(LoginView.this, SetupView.class));
+                    startActivity(new Intent(LoginView.this, FriendsView.class));
                 else
                     startActivity(new Intent(LoginView.this, FriendsView.class));
             }

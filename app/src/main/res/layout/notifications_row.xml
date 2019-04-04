@@ -7,8 +7,6 @@
     android:focusable="true"
     android:orientation="vertical"
     android:paddingBottom="@dimen/row_padding_vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/row_padding_vertical">
 
 
@@ -26,7 +24,6 @@
         android:id="@+id/timestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/timestamp"
         android:layout_below="@id/sendUser" />
 
     <Button

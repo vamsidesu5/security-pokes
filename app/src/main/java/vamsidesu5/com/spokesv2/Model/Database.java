@@ -37,6 +37,10 @@ public class Database {
         return payload;
     }
 
+    public void updateDatabasePath(String path) {
+        ref = FirebaseDatabase.getInstance().getReference(path);
+    }
+
     public DatabaseReference getRef() {
         return ref;
     }

@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import vamsidesu5.com.spokesv2.Model.Database;
 import vamsidesu5.com.spokesv2.Model.User;
@@ -39,6 +40,7 @@ public class LoginViewModel extends ViewModel {
         permissions.add("email");
         permissions.add("public_profile");
         permissions.add("user_friends");
+
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.FacebookBuilder().setPermissions(permissions).build());
@@ -46,16 +48,25 @@ public class LoginViewModel extends ViewModel {
     }
 
     public boolean checkSignedIn() {
-        return currUser != null;
+        if (AccessToken.getCurrentAccessToken() != null) {
+            currUser.updateUserInfo(FirebaseAuth.getInstance().getCurrentUser().getUid(), AccessToken.getCurrentAccessToken(), FirebaseAuth.getInstance().getCurrentUser());
+            updateUserInfo();
+            updateUserDir();
+            updateFriendList();
+            updateNumLogin();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void loginSuccessLog(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String regToken = sharedPreferences.getString("token", "-1");
         currUser.updateUserInfo(FirebaseAuth.getInstance().getCurrentUser().getUid(), AccessToken.getCurrentAccessToken(), FirebaseAuth.getInstance().getCurrentUser());
-
         updateUserInfo();
         updateToken(regToken);
+        updateUserDir();
         updateFriendList();
         updateNumLogin();
     }
@@ -77,6 +88,15 @@ public class LoginViewModel extends ViewModel {
         userInfoData.add(0);
         userInfoData.add(0);
         database.updateChild(database.constructPayload(userInfoNodes, userInfoData));
+    }
+
+    private void updateUserDir() {
+        Database database = new Database("dir/" + currUser.getFirebaseUserID());
+        Map<String, Object> firebaseIDPayload = database.constructPayload(currUser.getFacebookToken().getUserId(), "facebookToken");
+        database.updateChild(firebaseIDPayload);
+        database.updateDatabasePath("dir/" + currUser.getFacebookToken().getUserId());
+        Map<String, Object> facebookPayload = database.constructPayload(currUser.getFirebaseUserID(), "firebaseID");
+        database.updateChild(facebookPayload);
     }
 
     private void updateToken(String token) {

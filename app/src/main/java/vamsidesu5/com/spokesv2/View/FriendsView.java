@@ -1,12 +1,20 @@
 package vamsidesu5.com.spokesv2.View;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -23,34 +31,50 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import vamsidesu5.com.spokesv2.Model.FriendsViewAdapter;
+import vamsidesu5.com.spokesv2.Model.RecyclerViewAdapter;
 import vamsidesu5.com.spokesv2.Model.User;
 import vamsidesu5.com.spokesv2.R;
 import vamsidesu5.com.spokesv2.ViewModel.FriendsViewModel;
 
 //TODO Clean UP Class
 public class FriendsView extends AppCompatActivity {
-    private ListView friendsList;
     private FriendsViewModel mViewModel;
     private User currUser = User.getInstance();
+    public FriendsViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends2);
+        mViewModel = ViewModelProviders.of(this).get(FriendsViewModel.class);
 
-        //mViewModel = ViewModelProviders.of(this).get(FriendsViewModel.class);
-        friendsList = (ListView) findViewById(R.id.friendsspinner);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         AccessToken fb_token = AccessToken.getCurrentAccessToken();
         final String uId = user.getUid();
         final ArrayList<String> friendslist = new ArrayList<>();
         final DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/" + uId + "/friends");
+
+        adapter = new FriendsViewAdapter(friendslist);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        friendslist.add("Temp1");
+        friendslist.add("Temp2");
+        friendslist.add("Temp3");
+        friendslist.add("Temp4");
+        friendslist.add("Temp5");
+        friendslist.add("Temp6");
+
         currRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -59,126 +83,14 @@ public class FriendsView extends AppCompatActivity {
                     String add = c.getValue().toString();
                     friendslist.add(add);
                 }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(FriendsView.this, android.R.layout.simple_spinner_item, friendslist);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                friendsList.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
 
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
-        friendsList.setClickable(true);
-        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                final String friend = (String) friendsList.getItemAtPosition(position);
-                final DatabaseReference currRef = FirebaseDatabase.getInstance().getReference("users/");
-                final DatabaseReference pokeRef = FirebaseDatabase.getInstance().getReference("pokes/");
-                final DatabaseReference pokeRefUser = FirebaseDatabase.getInstance().getReference("users/" + currUser.getFirebaseUserID());
-
-                currRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    String totalPokes;
-                    @Override
-                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        pokeRef.child("totalPokes").runTransaction(new Transaction.Handler() {
-                            @Override
-                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                Integer score = mutableData.getValue(Integer.class);
-                                if (score == null) {
-                                    return Transaction.success(mutableData);
-                                }
-                                Log.d("score", score.toString());
-
-                                score++;
-                                totalPokes = score.toString();
-
-                                mutableData.setValue(score);
-                                return Transaction.success(mutableData);
-                            }
-
-                            @Override
-                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
-                                final DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference("pendingMessages/" + "m" + totalPokes);
-                                for (DataSnapshot c : dataSnapshot.getChildren()) {
-                                    Map<String, String> map = (Map) dataSnapshot.getValue();
-                                    Map<String, String> map2 = (Map) c.getValue();
-                                    int i = 0;
-                                    String userID = "";
-                                    for(Map.Entry<String, String> uids: map2.entrySet()){
-                                        if(uids.getKey().equals("token") && i == 1){
-                                            String token = uids.getValue();
-                                            Log.d("regTok", token);
-                                            Map<String, Object> messageData = new HashMap<>();
-                                            messageData.put("receiveToken", token);
-                                            messageData.put("receiveID", userID);
-                                            messageData.put("senderID", user.getUid());
-                                            messageData.put("timestamp", ServerValue.TIMESTAMP);
-                                            messageData.put("senderName", user.getDisplayName());
-                                            messageData.put("receiveName", friend);
-                                            Log.d("yo", friend);
-                                            messageRef.updateChildren(messageData);
-                                            i = 0;
-                                        }
-                                        if(friend.equals(uids.getValue())){
-                                            userID = c.getKey();
-                                            i++;
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                        pokeRefUser.child("numPokes").runTransaction(new Transaction.Handler() {
-                            @Override
-                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                Integer numPokes = mutableData.getValue(Integer.class);
-                                if (numPokes == null) {
-                                    return Transaction.success(mutableData);
-                                }
-                                numPokes++;
-                                mutableData.setValue(numPokes);
-                                return Transaction.success(mutableData);
-                            }
-
-                            @Override
-                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
-                                Log.d("Updated" , "Poke for User is Updated.");
-                            }
-                        });
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
-
-            }
-        });
-
-
-
-
-
-        ImageButton addfriend = (ImageButton) findViewById(R.id.addfriend);
-        addfriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                startActivity(new Intent(FriendsView.this, FriendsView.class));
-            }
-        });
-
-        ImageButton activityfeed = (ImageButton) findViewById(R.id.menu);
-        activityfeed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(FriendsView.this, ActivityView.class));
-            }
-        });
-
-        ImageButton notifications = (ImageButton) findViewById(R.id.notifications);
+        Button notifications = (Button) findViewById(R.id.notifications);
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,12 +98,12 @@ public class FriendsView extends AppCompatActivity {
             }
         });
 
-        ImageButton gotopoke = (ImageButton) findViewById(R.id.gotopoke);
-        gotopoke.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(FriendsView.this, FriendsView.class));
-            }
-        });
     }
+
+    public void friendClicked(View view) {
+        Button currFriend = view.findViewById(R.id.friendButton);
+        mViewModel.pokeFriend(currFriend.getText().toString());
+        Toast.makeText(this, "Successfuly poked " + currFriend.getText().toString(), Toast.LENGTH_SHORT).show();
+    }
+
 }
