@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -40,9 +41,10 @@ public class NotificationsView extends AppCompatActivity {
     private NotificationsViewModel mViewModel;
     public RecyclerViewAdapter adapter;
     LinkedList<Notification> animalNames = new LinkedList<Notification>();
+    float x1, x2, y1, y2;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
@@ -89,9 +91,23 @@ public class NotificationsView extends AppCompatActivity {
 
             }
         });
-
-        animalNames.add(0, new Notification("Jimmy poked You", 1551298097782L));
-
         mViewModel = ViewModelProviders.of(this).get(NotificationsViewModel.class);
+    }
+
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        Log.d("motionTouch", "motion" + " " + motionEvent.getAction() + " " + motionEvent.getX() + " " + motionEvent.getY());
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = motionEvent.getX();
+                y1 = motionEvent.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = motionEvent.getX();
+                y2 = motionEvent.getY();
+                if (x2 > x1 && Math.abs(y2 - y1) <= 300) {
+                    finish();
+                }
+        }
+        return false;
     }
 }

@@ -16,8 +16,12 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import vamsidesu5.com.spokesv2.Model.Database;
 import vamsidesu5.com.spokesv2.Model.User;
@@ -25,6 +29,7 @@ import vamsidesu5.com.spokesv2.Model.User;
 public class FriendsViewModel extends ViewModel {
     private User currUser = User.getInstance();
     private Database database;
+    Map friendsList;
 
     public void pokeFriend(String inputFriend) {
         final String friend = inputFriend;
@@ -55,13 +60,16 @@ public class FriendsViewModel extends ViewModel {
                     }
 
                     @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
+                    public void onComplete(final DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot2) {
                         final DatabaseReference messageRef = FirebaseDatabase.getInstance().getReference("pendingMessages/" + totalPokes);
                         for (DataSnapshot c : dataSnapshot.getChildren()) {
                             Map<String, String> map = (Map) dataSnapshot.getValue();
                             Map<String, String> map2 = (Map) c.getValue();
                             int i = 0;
                             String userID = "";
+                            Log.d("map friend: ", map2.get("token"));
+
+
                             for(Map.Entry<String, String> uids: map2.entrySet()){
                                 if(uids.getKey().equals("token") && i == 1){
                                     final String token = uids.getValue();
@@ -75,20 +83,21 @@ public class FriendsViewModel extends ViewModel {
                                     messageData.put("timestamp", timestamp);
                                     messageData.put("senderName", user.getDisplayName());
                                     messageData.put("receiveName", friend);
+                                    messageData.put("messageType", "poke");
                                     Log.d("yo", friend);
                                     messageRef.updateChildren(messageData);
-                                    final DatabaseReference currUserRefNotifications = FirebaseDatabase.getInstance().getReference("users/" + currUser.getFirebaseUserID() + "/notifications/" + totalPokes);
-                                    currUserRefNotifications.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                    final DatabaseReference pokeUserFriendsRef = FirebaseDatabase.getInstance().getReference("users/" + currUser.getFirebaseUserID() + "/friends");
+                                    final DatabaseReference pokedUserFriendsRef = FirebaseDatabase.getInstance().getReference("users/" + newId + "/friends");
+                                    pokeUserFriendsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            Map<String, Object> messageData = new HashMap<>();
-                                            messageData.put("receiveToken", token);
-                                            messageData.put("receiveID", newId);
-                                            messageData.put("senderID", user.getUid());
-                                            messageData.put("timestamp", timestamp);
-                                            messageData.put("senderName", user.getDisplayName());
-                                            messageData.put("receiveName", friend);
-                                            currUserRefNotifications.updateChildren(messageData);
+                                           friendsList = ((Map) dataSnapshot.getValue());
+                                            Object[] keySet = friendsList.keySet().toArray();
+                                            for (Object j : keySet) {
+                                                friendsList.put((Object) (j.toString()), totalPokes);
+                                            }
+
                                         }
 
                                         @Override
@@ -96,6 +105,19 @@ public class FriendsViewModel extends ViewModel {
 
                                         }
                                     });
+
+                                    /*
+                                      Object [] arr = pokeUserFollowers.keySet().toArray();
+                                            for (Object s : arr) {
+                                                Log.d("fanOutB", s.toString());
+                                            }*/
+
+
+
+
+                                    final DatabaseReference dirFriendsRef = FirebaseDatabase.getInstance().getReference("dir/");
+
+
 
                                     final DatabaseReference pokedUserRefNotifications = FirebaseDatabase.getInstance().getReference("users/" + newId + "/notifications/" + totalPokes);
                                     pokedUserRefNotifications.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -108,6 +130,7 @@ public class FriendsViewModel extends ViewModel {
                                             messageData.put("timestamp", timestamp);
                                             messageData.put("senderName", user.getDisplayName());
                                             messageData.put("receiveName", friend);
+                                            messageData.put("messageType", "poke");
                                             pokedUserRefNotifications.updateChildren(messageData);
                                         }
 

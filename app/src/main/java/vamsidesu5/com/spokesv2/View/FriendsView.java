@@ -1,9 +1,15 @@
 package vamsidesu5.com.spokesv2.View;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -11,8 +17,10 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -35,7 +43,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import vamsidesu5.com.spokesv2.Model.FriendsViewAdapter;
 import vamsidesu5.com.spokesv2.Model.RecyclerViewAdapter;
@@ -48,6 +58,8 @@ public class FriendsView extends AppCompatActivity {
     private FriendsViewModel mViewModel;
     private User currUser = User.getInstance();
     public FriendsViewAdapter adapter;
+    private PagerAdapter mPagerAdapter;
+    private float x1, x2, y1, y2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +80,12 @@ public class FriendsView extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-        friendslist.add("Temp1");
-        friendslist.add("Temp2");
-        friendslist.add("Temp3");
-        friendslist.add("Temp4");
-        friendslist.add("Temp5");
-        friendslist.add("Temp6");
+        friendslist.add("John Smith");
+        friendslist.add("Karen Len");
+        friendslist.add("Alex");
+        friendslist.add("Adam Jones");
+        friendslist.add("Jenny");
+        friendslist.add("Richard Chen");
 
         currRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -90,13 +102,6 @@ public class FriendsView extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        Button notifications = (Button) findViewById(R.id.notifications);
-        notifications.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(FriendsView.this, NotificationsView.class));
-            }
-        });
 
     }
 
@@ -104,6 +109,23 @@ public class FriendsView extends AppCompatActivity {
         Button currFriend = view.findViewById(R.id.friendButton);
         mViewModel.pokeFriend(currFriend.getText().toString());
         Toast.makeText(this, "Successfuly poked " + currFriend.getText().toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        Log.d("motionTouch", "motion" + " " + motionEvent.getAction() + " " + motionEvent.getX() + " " + motionEvent.getY());
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                x1 = motionEvent.getX();
+                y1 = motionEvent.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                x2 = motionEvent.getX();
+                y2 = motionEvent.getY();
+                if (x2 < x1 && Math.abs(y2 - y1) <= 300) {
+                    startActivity(new Intent(FriendsView.this, NotificationsView.class));
+                }
+        }
+        return false;
     }
 
 }
